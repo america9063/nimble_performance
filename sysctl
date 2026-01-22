@@ -1,0 +1,40 @@
+2. Archivo: optimizar_sistema.sh
+Este script automatiza la parte de memoria del kernel (sysctl) para que no tengas que editar archivos manualmente y asegura que el sistema soporte los 32MB que pide Nimble.
+#!/bin/bash
+# Script de Optimización de Kernel para Nimble (SRT/High Performance)
+
+echo "--- APLICANDO CAMBIOS DE KERNEL (32MB BUFFERS) ---"
+
+# 1. Definir los valores de memoria en el sistema (33554432 bytes = 32MB)
+# Escribimos en sysctl.conf para que sea persistente tras reinicios
+cat >> /etc/sysctl.conf <<EOF
+# --- NIMBLE OPTIMIZATION START ---
+net.core.rmem_max = 33554432
+net.core.wmem_max = 33554432
+net.core.rmem_default = 33554432
+net.core.wmem_default = 33554432
+# --- NIMBLE OPTIMIZATION END ---
+EOF
+
+# 2. Recargar configuración inmediatamente
+sysctl -p
+
+echo "✅ Kernel optimizado a 32MB."
+echo "-----------------------------------------------------"
+
+# 3. Copiar configuración de Nimble
+# Asumimos que el archivo nimble.conf está en la misma carpeta que este script
+if [ -f "nimble.conf" ]; then
+    echo "Respalando config anterior..."
+    cp /etc/nimble/nimble.conf /etc/nimble/nimble.conf.backup.$(date +%F_%T)
+    
+    echo "Instalando nueva configuración..."
+    cp nimble.conf /etc/nimble/nimble.conf
+    
+    echo "Reiniciando servicio Nimble..."
+    service nimble restart
+    echo "✅ Nimble reiniciado con nueva configuración."
+else
+    echo "⚠️ ADVERTENCIA: No se encontró el archivo 'nimble.conf' en esta carpeta."
+    echo "Por favor, copia el contenido manualmente."
+fi
