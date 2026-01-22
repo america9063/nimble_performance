@@ -1,0 +1,25 @@
+En cuanto a la memoria, si tiene más de 60 GB de RAM, le recomendamos reservar una parte para Linux.
+
+Ejecute este comando para reservar 10 GB:
+
+sysctl vm.min_free_kbytes=10240000
+quí tienes cómo hacerlo correctamente:
+
+1. Hacerlo permanente (Recomendado)
+Abre el archivo sysctl.conf:
+
+Bash
+nano /etc/sysctl.conf
+Ve al final del archivo (donde pusimos los buffers de red) y agrega esta línea:
+
+Properties
+# Reservar 10GB para el Kernel de Linux (Evita bloqueos en alta carga)
+vm.min_free_kbytes = 10240000
+Guarda (Ctrl + O, Enter) y Sal (Ctrl + X).
+
+2. Aplicarlo ahora mismo
+Una vez guardado en el archivo, ejecuta este comando para que el sistema reserve esa memoria inmediatamente sin necesidad de reiniciar:
+
+Bash
+sysctl -p
+Con esto, tu servidor tendrá 10 GB blindados para el sistema, y el resto (177 GB) disponible para que Nimble use su caché y buffers a máxima potencia sin riesgo de congelamientos.
