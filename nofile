@@ -1,0 +1,22 @@
+
+Nimble Streamer es conocido por ser extremadamente ligero y eficiente, pero para manejar alta concurrencia (miles de conexiones simultáneas) o flujos de alto bitrate, es necesario ajustar tanto el sistema operativo (generalmente Linux) como la configuración del propio software.
+
+Aquí tienes una guía estructurada para realizar el "performance tuning".
+
+Nota Importante: Antes de aplicar cambios, realiza una copia de seguridad de tu archivo de configuración actual (/etc/nimble/nimble.conf).
+
+1. Optimización del Sistema Operativo (Linux)
+El cuello de botella más común no es el software, sino los límites predeterminados de Linux para conexiones de red y archivos abiertos.
+
+Aumentar el límite de archivos abiertos (File Descriptors)
+Cada conexión de espectador cuenta como un archivo abierto. El valor por defecto (1024) es muy bajo.
+
+Edita el archivo de límites: sudo nano /etc/security/limits.conf
+
+Agrega las siguientes líneas al final:
+
+Plaintext
+* hard nofile 200000
+* soft nofile 200000
+root hard nofile 200000
+root soft nofile 200000
